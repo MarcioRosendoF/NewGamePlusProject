@@ -23,6 +23,7 @@ namespace Inventory
         private int _originalSiblingIndex;
         private Canvas _rootCanvas;
         private bool _isDragging;
+        private PointerEventData _activePointerEventData;
 
         private Tween _dragTween;
         private Tween _scaleTween;
@@ -102,6 +103,7 @@ namespace Inventory
             transform.SetAsLastSibling();
 
             _isDragging = true;
+            _activePointerEventData = eventData;
 
             PlayDragStartAnimation(eventData.position);
         }
@@ -116,7 +118,11 @@ namespace Inventory
 
         public void OnEndDrag(PointerEventData eventData)
         {
+            if (!_isDragging) return;
+
             _isDragging = false;
+            _activePointerEventData = null;
+
             _dragTween?.Kill();
             _scaleTween?.Kill();
             _rotateTween?.Kill();
@@ -208,9 +214,15 @@ namespace Inventory
 
         public void ForceCompleteAnimations()
         {
-            _isDragging = false;
-            KillAllTweens();
+            if (_isDragging && _activePointerEventData != null)
+            {
+                _activePointerEventData.pointerDrag = null;
+            }
 
+            _isDragging = false;
+            _activePointerEventData = null;
+
+            KillAllTweens();
             ResetTransformState();
             ReturnToOriginalParent();
         }
