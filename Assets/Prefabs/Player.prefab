@@ -84,6 +84,8 @@ GameObject:
   - component: {fileID: 3362388030271183513}
   - component: {fileID: 4984616113394224310}
   - component: {fileID: 7968598838492511029}
+  - component: {fileID: 2939847854642648452}
+  - component: {fileID: 2958424035057542456}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -224,6 +226,32 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.9, y: 0.34762582}
   m_EdgeRadius: 0
+--- !u!114 &2939847854642648452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6633886994179033896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13482a84bfee89b47b8b79ab1f8ba2b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gameplay.DebugInputHandler
+  itemDatabase: {fileID: 11400000, guid: 566349c1af9cbe141b92f53238f9cafd, type: 2}
+  inventoryPersistence: {fileID: 0}
+--- !u!114 &2958424035057542456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6633886994179033896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abc2241df07afff4cbf2bcac598315fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gameplay.UIInputHandler
 --- !u!1 &9212746001219664178
 GameObject:
   m_ObjectHideFlags: 0

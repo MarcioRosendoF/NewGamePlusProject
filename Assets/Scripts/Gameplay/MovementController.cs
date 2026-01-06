@@ -23,6 +23,7 @@ namespace Gameplay
         {
             rb = GetComponent<Rigidbody2D>();
             rb.gravityScale = 0;
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
             lastMoveInput = Vector2.down;
         }
 
@@ -43,8 +44,14 @@ namespace Gameplay
 
         private void FixedUpdate()
         {
+            var moveDir = moveInput;
+            if (moveDir.sqrMagnitude > 1f)
+            {
+                moveDir.Normalize();
+            }
+
             var targetSpeed = isRunning ? moveSpeed * runSpeedMultiplier : moveSpeed;
-            rb.linearVelocity = moveInput * targetSpeed;
+            rb.linearVelocity = moveDir * targetSpeed;
         }
 
         public float GetCurrentSpeed() => moveInput.magnitude;

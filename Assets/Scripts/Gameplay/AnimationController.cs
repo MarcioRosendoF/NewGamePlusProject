@@ -50,7 +50,9 @@ namespace Gameplay
                 animator.SetFloat(MoveYHash, cardinalDir.y);
                 animator.SetFloat(SpeedHash, 0);
 
+#if UNITY_EDITOR
                 Debug.Log($"[AnimController] Start - Cardinal: ({cardinalDir.x}, {cardinalDir.y})");
+#endif
             }
         }
 
