@@ -86,9 +86,10 @@ GameObject:
   - component: {fileID: 7968598838492511029}
   - component: {fileID: 2939847854642648452}
   - component: {fileID: 2958424035057542456}
+  - component: {fileID: 58834963666776241}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -239,7 +240,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Gameplay.DebugInputHandler
   itemDatabase: {fileID: 11400000, guid: 566349c1af9cbe141b92f53238f9cafd, type: 2}
-  inventoryPersistence: {fileID: 0}
 --- !u!114 &2958424035057542456
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -252,6 +252,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abc2241df07afff4cbf2bcac598315fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Gameplay.UIInputHandler
+--- !u!114 &58834963666776241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6633886994179033896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72f5611ba54ca4344bb9f052fa8d163f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gameplay.Interactor
+  interactRange: 1.5
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &9212746001219664178
 GameObject:
   m_ObjectHideFlags: 0
