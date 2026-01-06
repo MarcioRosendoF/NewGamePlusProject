@@ -4,9 +4,10 @@ namespace Gameplay
 {
     public class AnimationController : MonoBehaviour
     {
-        private Animator animator;
-        private SpriteRenderer spriteRenderer;
-        private MovementController movementController;
+        [Header("References")]
+        [SerializeField] private Animator animator;
+        [SerializeField] private SpriteRenderer spriteRenderer;
+        [SerializeField] private MovementController movementController;
 
         private static readonly int MoveXHash = Animator.StringToHash("MoveX");
         private static readonly int MoveYHash = Animator.StringToHash("MoveY");
@@ -16,16 +17,26 @@ namespace Gameplay
 
         private void Awake()
         {
-            animator = GetComponent<Animator>();
+            FallbackSearch();
+            ValidateComponents();
+        }
 
-            movementController = GetComponent<MovementController>();
+        private void FallbackSearch()
+        {
+            if (animator == null) animator = GetComponent<Animator>();
+            if (animator == null) animator = GetComponentInChildren<Animator>();
+
+            if (movementController == null) movementController = GetComponent<MovementController>();
             if (movementController == null) movementController = GetComponentInParent<MovementController>();
 
-            spriteRenderer = GetComponent<SpriteRenderer>();
+            if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
             if (spriteRenderer == null) spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        }
 
-            if (animator == null) Debug.LogError($"{name}: Animator component missing!");
-            if (movementController == null) Debug.LogError($"{name}: MovementController component missing on this object or Parent!");
+        private void ValidateComponents()
+        {
+            if (animator == null) Debug.LogError($"[AnimationController] {name}: Animator component missing! Please assign it in the Inspector.");
+            if (movementController == null) Debug.LogError($"[AnimationController] {name}: MovementController mission on this object or Parent!");
         }
 
         private void Start()
@@ -60,8 +71,6 @@ namespace Gameplay
 
                 animator.SetFloat(MoveXHash, cardinalDir.x);
                 animator.SetFloat(MoveYHash, cardinalDir.y);
-
-                Debug.Log($"[AnimController] Input: ({moveInput.x:F2}, {moveInput.y:F2}) → Cardinal: ({cardinalDir.x}, {cardinalDir.y}) | Speed: {currentSpeed:F2}");
             }
         }
 
