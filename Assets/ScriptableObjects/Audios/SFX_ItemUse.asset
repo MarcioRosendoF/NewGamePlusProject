@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SFX_ItemUse
   m_EditorClassIdentifier: Assembly-CSharp::Core.SoundEffectSO
   clip: {fileID: 8300000, guid: 9987d3a0648b49145aa6d179ca8438fd, type: 3}
-  volume: 1
+  volume: 0.605
   pitchMin: 0.95
   pitchMax: 1.05
   loop: 0
@@ -22,4 +22,4 @@ MonoBehaviour:
   fadeInTime: 0.5
   fadeOut: 0
   fadeOutTime: 0.5
-  mixerGroup: {fileID: 24300002, guid: 8d79cc56e62bdf14a90a3311004312d0, type: 2}
+  mixerGroup: {fileID: 6450299315156925497, guid: 8d79cc56e62bdf14a90a3311004312d0, type: 2}

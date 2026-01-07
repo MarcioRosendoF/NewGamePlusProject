@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace Inventory
 {
@@ -92,15 +93,30 @@ namespace Inventory
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (_itemData != null && TooltipSystem.Instance != null)
+            if (_itemData == null || TooltipSystem.Instance == null)
+                return;
+
+            if (_inventoryView != null && _inventoryView.IsAnimating)
+                return;
+
+            if (IsAnyItemBeingDragged(eventData))
+                return;
+
+            var tooltipText = _itemData.description;
+            if (!string.IsNullOrEmpty(_itemData.usageDescription))
             {
-                var tooltipText = _itemData.description;
-                if (!string.IsNullOrEmpty(_itemData.usageDescription))
-                {
-                    tooltipText += $"\n\n<i>{_itemData.usageDescription}</i>\n<color=#888888>(Double-click to use)</color>";
-                }
-                TooltipSystem.Instance.Show(_itemData.itemName, tooltipText);
+                tooltipText += $"\n\n<i>{_itemData.usageDescription}</i>\n<color=#61f2da>(Double-click to use)</color>";
             }
+            TooltipSystem.Instance.Show(_itemData.itemName, _itemData.GetItemTypeLabel(), tooltipText);
+        }
+
+        private bool IsAnyItemBeingDragged(PointerEventData eventData)
+        {
+            if (eventData.pointerDrag == null)
+                return false;
+
+            var draggedItem = eventData.pointerDrag.GetComponent<UI_InventoryItem>();
+            return draggedItem != null;
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -117,6 +133,32 @@ namespace Inventory
             {
                 TooltipSystem.Instance.Hide();
             }
+        }
+
+        public void OnItemReturnComplete(Vector2 mousePositionAtDrop)
+        {
+            if (_itemData == null || TooltipSystem.Instance == null)
+                return;
+
+            if (_inventoryView != null && _inventoryView.IsAnimating)
+                return;
+
+
+
+            if (!RectTransformUtility.RectangleContainsScreenPoint(
+                GetComponent<RectTransform>(),
+                mousePositionAtDrop,
+                _inventoryView?.GetComponentInParent<Canvas>()?.worldCamera))
+            {
+                return;
+            }
+
+            var tooltipText = _itemData.description;
+            if (!string.IsNullOrEmpty(_itemData.usageDescription))
+            {
+                tooltipText += $"\n\n<i>{_itemData.usageDescription}</i>\n<color=#61f2da>(Double-click to use)</color>";
+            }
+            TooltipSystem.Instance.Show(_itemData.itemName, _itemData.GetItemTypeLabel(), tooltipText);
         }
     }
 }

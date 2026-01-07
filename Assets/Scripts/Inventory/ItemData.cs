@@ -47,6 +47,16 @@ namespace Inventory
             }
         }
 
+        public string GetItemTypeLabel()
+        {
+            return type switch
+            {
+                ItemType.Consumable => "<color=#8B2500>CONSUMABLE</color>",
+                ItemType.Equippable => "<color=#1A4D8F>EQUIPPABLE</color>",
+                _ => "UNKNOWN"
+            };
+        }
+
 #if UNITY_EDITOR
         private void OnValidate()
         {

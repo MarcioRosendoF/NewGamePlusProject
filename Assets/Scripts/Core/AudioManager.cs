@@ -39,17 +39,23 @@ namespace Core
 
         private void PlayLoopingSound(SoundEffectSO sound)
         {
-            if (sound.interruptLoopOnReplay)
+            if (activeLoopingSounds.TryGetValue(sound, out var existingSource) && existingSource != null)
             {
-                if (activeLoopingSounds.TryGetValue(sound, out var existingSource) && existingSource != null)
+                if (sound.interruptLoopOnReplay)
+                {
                     StopAndReturn(existingSource);
-            }
-            else if (activeLoopingSounds.ContainsKey(sound))
-            {
-                return;
+                }
+                else
+                {
+                    existingSource.volume = sound.volume;
+                    existingSource.pitch = Random.Range(sound.pitchMin, sound.pitchMax);
+                    existingSource.outputAudioMixerGroup = sound.mixerGroup;
+                    return;
+                }
             }
 
             var audioSource = audioSourcePool.GetAudioSource();
+            audioSource.DOKill();
             audioSource.clip = sound.clip;
             audioSource.volume = sound.volume;
             audioSource.loop = true;
@@ -67,6 +73,7 @@ namespace Core
         private void PlayOneShotSound(SoundEffectSO sound)
         {
             var audioSource = audioSourcePool.GetAudioSource();
+            audioSource.DOKill();
             audioSource.clip = sound.clip;
             audioSource.volume = sound.volume;
             audioSource.loop = false;
@@ -74,7 +81,8 @@ namespace Core
             audioSource.outputAudioMixerGroup = sound.mixerGroup;
             audioSource.Play();
 
-            StartCoroutine(ReturnAudioSourceAfterClip(audioSource, sound.clip.length));
+            var actualDuration = sound.clip.length / Mathf.Max(0.01f, audioSource.pitch);
+            StartCoroutine(ReturnAudioSourceAfterClip(audioSource, actualDuration));
         }
 
         private IEnumerator ReturnAudioSourceAfterClip(AudioSource audioSource, float clipLength)
@@ -115,6 +123,7 @@ namespace Core
         private void StopAndReturn(AudioSource source)
         {
             source.Stop();
+            source.DOKill();
             audioSourcePool.ReturnAudioSource(source);
         }
 
@@ -123,6 +132,9 @@ namespace Core
             audioSource.volume = 0;
             audioSource.Play();
             audioSource.DOKill();
+#if UNITY_EDITOR
+            Debug.Log($"[AudioManager] Fading in to volume {targetVolume} over {duration} seconds");
+#endif
             audioSource.DOFade(targetVolume, duration);
         }
 

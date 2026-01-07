@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using DG.Tweening;
 
 namespace Inventory
@@ -26,6 +27,7 @@ namespace Inventory
         private bool _isDragging;
         private bool _isReturning;
         private PointerEventData _activePointerEventData;
+        private Vector2 _dropMousePosition;
 
         private Tween _dragTween;
         private Tween _scaleTween;
@@ -94,6 +96,17 @@ namespace Inventory
             {
                 PlayAppearAnimation();
             }
+
+            CheckTooltipAfterCreation();
+        }
+
+        private void CheckTooltipAfterCreation()
+        {
+            if (Mouse.current == null || _originSlot == null)
+                return;
+
+            var mousePos = Mouse.current.position.ReadValue();
+            _originSlot.OnItemReturnComplete(mousePos);
         }
 
         private void CaptureHomeState()
@@ -195,6 +208,7 @@ namespace Inventory
             }
             else
             {
+                _dropMousePosition = Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
                 PlayReturnAnimation();
             }
         }
@@ -259,11 +273,13 @@ namespace Inventory
                 _isReturning = false;
                 ReturnToOriginalParent();
                 _returnSequence = null;
+                _originSlot?.OnItemReturnComplete(_dropMousePosition);
             });
             _returnSequence.OnKill(() =>
             {
                 _isReturning = false;
                 _returnSequence = null;
+
             });
         }
 

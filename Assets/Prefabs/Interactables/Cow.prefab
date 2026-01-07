@@ -131,6 +131,8 @@ MonoBehaviour:
   spriteRenderer: {fileID: 1663442546104451856}
   movementController: {fileID: 8279023241404724027}
   useFlipping: 1
+  syncAnimationSpeed: 0
+  baseAnimationSpeed: 1
 --- !u!114 &1611514978396342981
 MonoBehaviour:
   m_ObjectHideFlags: 0

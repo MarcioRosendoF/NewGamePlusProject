@@ -10,11 +10,17 @@ namespace Gameplay
         [SerializeField] private MovementController movementController;
         [SerializeField] private bool useFlipping = false;
 
+        [Header("Animation Speed Settings")]
+        [SerializeField] private bool syncAnimationSpeed = true;
+        [SerializeField] private float baseAnimationSpeed = 1f;
+
         private static readonly int MoveXHash = Animator.StringToHash("MoveX");
         private static readonly int MoveYHash = Animator.StringToHash("MoveY");
         private static readonly int SpeedHash = Animator.StringToHash("Speed");
         private static readonly int IsRunningHash = Animator.StringToHash("IsRunning");
         private static readonly int IsInteractingHash = Animator.StringToHash("isInteracting");
+
+        private bool _wasRunning;
 
         private void Awake()
         {
@@ -68,7 +74,16 @@ namespace Gameplay
         private void UpdateAnimationState(Vector2 input, float speed)
         {
             animator.SetFloat(SpeedHash, speed);
-            animator.SetBool(IsRunningHash, movementController.IsRunning);
+
+            var isRunning = movementController.IsRunning;
+            animator.SetBool(IsRunningHash, isRunning);
+
+            if (syncAnimationSpeed && isRunning != _wasRunning)
+            {
+                var targetSpeed = isRunning ? baseAnimationSpeed * movementController.RunSpeedMultiplier : baseAnimationSpeed;
+                animator.speed = targetSpeed;
+                _wasRunning = isRunning;
+            }
 
             if (input.sqrMagnitude > 0.01f)
             {

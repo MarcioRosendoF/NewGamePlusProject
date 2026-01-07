@@ -19,6 +19,7 @@ namespace Gameplay
         public Vector2 LastMoveInput => lastMoveInput;
         public bool IsRunning => isRunning;
         public float MoveSpeed => moveSpeed;
+        public float RunSpeedMultiplier => runSpeedMultiplier;
 
         private void Awake()
         {

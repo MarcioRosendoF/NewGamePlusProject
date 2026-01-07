@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SFX_Harvest
   m_EditorClassIdentifier: Assembly-CSharp::Core.SoundEffectSO
   clip: {fileID: 8300000, guid: 84ad50da345ec0b4d978cccdcfc1f10a, type: 3}
-  volume: 1
+  volume: 0.605
   pitchMin: 0.95
   pitchMax: 1.05
   loop: 0

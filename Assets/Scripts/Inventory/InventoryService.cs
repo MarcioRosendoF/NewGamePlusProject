@@ -14,8 +14,14 @@ namespace Inventory
         [SerializeField] private SoundEffectSO genericUseSound;
 
         private const int MAX_SLOTS = 9;
+        private const float CONSUMABLE_COOLDOWN = 0.5f;
+        private const float EQUIP_TOGGLE_COOLDOWN = 0.3f;
+        private const float EQUIP_USE_COOLDOWN = 1f;
 
         private List<InventorySlot> _slots = new List<InventorySlot>();
+        private float _lastConsumableUseTime = -999f;
+        private float _lastEquipToggleTime = -999f;
+        private float _lastEquipUseTime = -999f;
 
         public event Action OnInventoryChanged;
         public event Action<ItemData> OnItemUsed;
@@ -131,6 +137,11 @@ namespace Inventory
 
             if (itemData.type == ItemType.Consumable)
             {
+                if (Time.time - _lastConsumableUseTime < CONSUMABLE_COOLDOWN)
+                    return false;
+
+                _lastConsumableUseTime = Time.time;
+
                 ExecuteItemBehavior(itemData);
                 PlayItemUseSound(itemData);
                 OnItemUsed?.Invoke(itemData);
@@ -142,6 +153,11 @@ namespace Inventory
             }
             else if (itemData.type == ItemType.Equippable)
             {
+                if (Time.time - _lastEquipToggleTime < EQUIP_TOGGLE_COOLDOWN)
+                    return false;
+
+                _lastEquipToggleTime = Time.time;
+
                 if (EquipmentManager.Instance != null)
                 {
                     if (EquipmentManager.Instance.IsItemEquipped(itemData.Guid))
@@ -172,6 +188,11 @@ namespace Inventory
             var itemData = itemDatabase.GetItemByGuid(equippedGuid);
             if (itemData == null)
                 return false;
+
+            if (Time.time - _lastEquipUseTime < EQUIP_USE_COOLDOWN)
+                return false;
+
+            _lastEquipUseTime = Time.time;
 
             ExecuteItemBehavior(itemData);
             PlayItemUseSound(itemData);
