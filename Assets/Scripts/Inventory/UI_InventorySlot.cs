@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 namespace Inventory
 {
-    public class UI_InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
+    public class UI_InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
         [Header("References")]
         [SerializeField] private Transform itemContainer;
@@ -29,6 +29,8 @@ namespace Inventory
 
         public void SetData(ItemData itemData, int amount, int index, GameObject itemPrefab)
         {
+            var itemChanged = _itemData != itemData;
+
             _itemData = itemData;
             _amount = amount;
             _slotIndex = index;
@@ -39,9 +41,14 @@ namespace Inventory
                 {
                     CreateItem(itemPrefab);
                 }
+                else if (_currentItem.gameObject != null)
+                {
+                    _currentItem.Initialize(_itemData, _amount, this, itemChanged);
+                }
                 else
                 {
-                    _currentItem.Initialize(_itemData, _amount, this);
+                    _currentItem = null;
+                    CreateItem(itemPrefab);
                 }
             }
             else
@@ -66,6 +73,11 @@ namespace Inventory
             }
         }
 
+        public void ClearCurrentItemReference()
+        {
+            _currentItem = null;
+        }
+
         public void OnDrop(PointerEventData eventData)
         {
         }
@@ -82,7 +94,20 @@ namespace Inventory
         {
             if (_itemData != null && TooltipSystem.Instance != null)
             {
-                TooltipSystem.Instance.Show(_itemData.itemName, _itemData.description);
+                var tooltipText = _itemData.description;
+                if (!string.IsNullOrEmpty(_itemData.usageDescription))
+                {
+                    tooltipText += $"\n\n<i>{_itemData.usageDescription}</i>\n<color=#888888>(Double-click to use)</color>";
+                }
+                TooltipSystem.Instance.Show(_itemData.itemName, tooltipText);
+            }
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (eventData.clickCount == 2 && _itemData != null)
+            {
+                InventoryService.Instance?.UseItem(_slotIndex);
             }
         }
 

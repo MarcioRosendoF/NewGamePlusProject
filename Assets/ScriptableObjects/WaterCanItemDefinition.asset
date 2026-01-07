@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c115215a10474094e829233ef59b8a79, type: 3}
+  m_Name: WaterCanItemDefinition
+  m_EditorClassIdentifier: 
+  guidString: b2c3d4e5-f6a7-8901-bcde-f12345678901
+  itemName: Watering Can
+  icon: {fileID: 3435190667326688956, guid: 722edcfaafd92cf42bb3256d3b2768b0, type: 3}
+  description: Just a regular watering can. What CAN't it do?
+  type: 0
+  usageDescription: Refreshes bushes fruits
+  equippedSprite: {fileID: 2860006914309871096, guid: b0f8cc0c68e0ea74ab554ca52ff656d6, type: 3}
+  useSprite: {fileID: -2376758258213490438, guid: b0f8cc0c68e0ea74ab554ca52ff656d6, type: 3}
+  behaviorPrefab: {fileID: 2190977682632640015, guid: 9486c10803ac4454488c8910074d219f, type: 3}

@@ -14,6 +14,7 @@ namespace Inventory
         private List<InventorySlot> _slots = new List<InventorySlot>();
 
         public event Action OnInventoryChanged;
+        public event Action<ItemData> OnItemUsed;
 
         private void Awake()
         {
@@ -114,6 +115,83 @@ namespace Inventory
         }
 
         public List<InventorySlot> GetAllSlots() => _slots;
+
+        public bool UseItem(int index)
+        {
+            if (index < 0 || index >= _slots.Count || _slots[index].IsEmpty)
+                return false;
+
+            var itemData = GetItemAt(index);
+            if (itemData == null)
+                return false;
+
+            if (itemData.type == ItemType.Consumable)
+            {
+                ExecuteItemBehavior(itemData);
+                OnItemUsed?.Invoke(itemData);
+
+#if UNITY_EDITOR
+                Debug.Log($"[InventoryService] Used consumable: {itemData.itemName}");
+#endif
+                RemoveItem(index, 1);
+            }
+            else if (itemData.type == ItemType.Equippable)
+            {
+                if (EquipmentManager.Instance != null)
+                {
+                    if (EquipmentManager.Instance.IsItemEquipped(itemData.Guid))
+                    {
+                        EquipmentManager.Instance.UnequipItem();
+                    }
+                    else
+                    {
+                        EquipmentManager.Instance.EquipItem(itemData);
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        public bool IsItemEquipped(Guid itemGuid)
+        {
+            return EquipmentManager.Instance != null && EquipmentManager.Instance.IsItemEquipped(itemGuid);
+        }
+
+        public bool UseEquippedItemWithoutToggle()
+        {
+            if (EquipmentManager.Instance == null || !EquipmentManager.Instance.HasEquippedItem())
+                return false;
+
+            var equippedGuid = EquipmentManager.Instance.GetEquippedItemGuid();
+            var itemData = itemDatabase.GetItemByGuid(equippedGuid);
+            if (itemData == null)
+                return false;
+
+            ExecuteItemBehavior(itemData);
+            OnItemUsed?.Invoke(itemData);
+
+#if UNITY_EDITOR
+            Debug.Log($"[InventoryService] Used equipped item: {itemData.itemName}");
+#endif
+            return true;
+        }
+
+        private void ExecuteItemBehavior(ItemData itemData)
+        {
+            if (itemData.behaviorPrefab != null)
+            {
+                var behavior = itemData.behaviorPrefab.GetComponent<ItemBehavior>();
+                if (behavior != null)
+                {
+                    var player = GameObject.FindGameObjectWithTag("Player");
+                    if (player != null)
+                    {
+                        behavior.OnUse(player);
+                    }
+                }
+            }
+        }
 
         public void LoadFromSlots(List<InventorySlot> slots)
         {

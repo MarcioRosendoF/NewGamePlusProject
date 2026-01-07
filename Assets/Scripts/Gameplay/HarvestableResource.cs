@@ -74,6 +74,24 @@ namespace Gameplay
             }
         }
 
+        public bool IsFull => !isHarvested;
+
+        public void InstantRegenerate()
+        {
+            if (IsFull) return;
+
+            StopAllCoroutines();
+
+            isHarvested = false;
+
+            if (spriteRenderer != null && fullSprite != null)
+            {
+                spriteRenderer.sprite = fullSprite;
+                ResetVisuals();
+                PlayRespawnAnimation();
+            }
+        }
+
         public void Interact()
         {
             if (isAnimating) return;

@@ -11,8 +11,13 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c115215a10474094e829233ef59b8a79, type: 3}
   m_Name: AppleItemDefinition
-  m_EditorClassIdentifier: Assembly-CSharp::Inventory.ItemData
+  m_EditorClassIdentifier: 
+  guidString: a1b2c3d4-e5f6-7890-abcd-ef1234567890
   itemName: Apple
-  icon: {fileID: 5671970457568267533, guid: 53ca57767b73f604d99fbbb460212b08, type: 3}
-  description: Watch out not to become addicted!
+  icon: {fileID: 8535626180064015413, guid: 4592bef17d503a7459e24d683e3b0a79, type: 3}
+  description: Apples! So tasty.
   type: 1
+  usageDescription: Makes you happy :)
+  equippedSprite: {fileID: 0}
+  useSprite: {fileID: 0}
+  behaviorPrefab: {fileID: 4440634196142402066, guid: 650acd1b44701064ab88d213517379be, type: 3}

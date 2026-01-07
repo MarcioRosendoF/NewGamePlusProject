@@ -44,7 +44,7 @@ namespace Gameplay
 
             if (moveInput.sqrMagnitude > 0.01f)
             {
-                lastMoveInput = moveInput.normalized;
+                lastMoveInput = GetCardinalDirection(moveInput);
             }
         }
 
@@ -62,7 +62,21 @@ namespace Gameplay
         {
             if (direction.sqrMagnitude > 0.01f)
             {
-                lastMoveInput = direction.normalized;
+                lastMoveInput = GetCardinalDirection(direction);
+            }
+        }
+
+        public Vector2 GetCardinalDirection(Vector2 input)
+        {
+            if (input.sqrMagnitude < 0.01f) return Vector2.zero;
+
+            if (Mathf.Abs(input.x) > Mathf.Abs(input.y))
+            {
+                return input.x > 0 ? Vector2.right : Vector2.left;
+            }
+            else
+            {
+                return input.y > 0 ? Vector2.up : Vector2.down;
             }
         }
 

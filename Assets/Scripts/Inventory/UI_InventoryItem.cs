@@ -13,6 +13,7 @@ namespace Inventory
         [SerializeField] private Image iconImage;
         [SerializeField] private TextMeshProUGUI quantityText;
         [SerializeField] private CanvasGroup canvasGroup;
+        [SerializeField] private Image equippedIndicator;
 
         private ItemData _itemData;
         private int _amount;
@@ -23,12 +24,14 @@ namespace Inventory
         private int _originalSiblingIndex;
         private Canvas _rootCanvas;
         private bool _isDragging;
+        private bool _isReturning;
         private PointerEventData _activePointerEventData;
 
         private Tween _dragTween;
         private Tween _scaleTween;
         private Tween _rotateTween;
         private Tween _fadeTween;
+        private Tween _appearTween;
         private Sequence _returnSequence;
 
         private void Awake()
@@ -43,9 +46,36 @@ namespace Inventory
         {
             if (!_isDragging)
                 CaptureHomeState();
+
+            if (EquipmentManager.Instance != null)
+            {
+                EquipmentManager.Instance.OnItemEquipped += OnItemEquipped;
+                EquipmentManager.Instance.OnItemUnequipped += OnItemUnequipped;
+            }
+
+            UpdateEquippedIndicator();
         }
 
-        public void Initialize(ItemData itemData, int amount, UI_InventorySlot originSlot)
+        private void OnDestroy()
+        {
+            if (EquipmentManager.Instance != null)
+            {
+                EquipmentManager.Instance.OnItemEquipped -= OnItemEquipped;
+                EquipmentManager.Instance.OnItemUnequipped -= OnItemUnequipped;
+            }
+        }
+
+        private void OnItemEquipped(ItemData item)
+        {
+            UpdateEquippedIndicator();
+        }
+
+        private void OnItemUnequipped()
+        {
+            UpdateEquippedIndicator();
+        }
+
+        public void Initialize(ItemData itemData, int amount, UI_InventorySlot originSlot, bool playAnimation = true)
         {
             _itemData = itemData;
             _amount = amount;
@@ -60,7 +90,10 @@ namespace Inventory
                 ResetTransformState();
             }
 
-            PlayAppearAnimation();
+            if (playAnimation)
+            {
+                PlayAppearAnimation();
+            }
         }
 
         private void CaptureHomeState()
@@ -81,17 +114,39 @@ namespace Inventory
                 iconImage.enabled = true;
                 quantityText.text = _amount > 1 ? _amount.ToString() : "";
             }
+
+            UpdateEquippedIndicator();
+        }
+
+        private void UpdateEquippedIndicator()
+        {
+            if (equippedIndicator == null) return;
+
+            var isEquipped = _itemData != null &&
+                           _itemData.type == ItemType.Equippable &&
+                           EquipmentManager.Instance != null &&
+                           EquipmentManager.Instance.IsItemEquipped(_itemData.Guid);
+
+            equippedIndicator.enabled = isEquipped;
         }
 
         private void PlayAppearAnimation()
         {
+            _appearTween?.Kill();
             transform.localScale = Vector3.zero;
-            transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack);
+            _appearTween = transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack).SetAutoKill(false);
+            _appearTween.OnKill(() => _appearTween = null);
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
             if (_originSlot != null && _originSlot.InventoryView != null && _originSlot.InventoryView.IsAnimating)
+            {
+                eventData.pointerDrag = null;
+                return;
+            }
+
+            if (_isReturning)
             {
                 eventData.pointerDrag = null;
                 return;
@@ -129,17 +184,34 @@ namespace Inventory
 
             canvasGroup.blocksRaycasts = true;
 
-            var targetSlot = eventData.pointerEnter?.GetComponent<UI_InventorySlot>();
+            var targetSlot = GetSlotUnderCursor(eventData);
 
             if (targetSlot != null && targetSlot != _originSlot)
             {
-                PlaySwapAnimation();
+                _originSlot.ClearCurrentItemReference();
                 _originSlot.NotifyItemDropped(targetSlot);
+                KillAllTweens();
+                Destroy(gameObject);
             }
             else
             {
                 PlayReturnAnimation();
             }
+        }
+
+        private UI_InventorySlot GetSlotUnderCursor(PointerEventData eventData)
+        {
+            var results = new System.Collections.Generic.List<RaycastResult>();
+            EventSystem.current.RaycastAll(eventData, results);
+
+            foreach (var result in results)
+            {
+                var slot = result.gameObject.GetComponent<UI_InventorySlot>();
+                if (slot != null)
+                    return slot;
+            }
+
+            return null;
         }
 
         private void PlayDragStartAnimation(Vector3 targetPosition)
@@ -149,45 +221,48 @@ namespace Inventory
             _rotateTween?.Kill();
             _fadeTween?.Kill();
 
-            _fadeTween = canvasGroup.DOFade(0.6f, 0.2f);
+            _fadeTween = canvasGroup.DOFade(0.6f, 0.2f).SetAutoKill(false);
+            _fadeTween.OnKill(() => _fadeTween = null);
             canvasGroup.blocksRaycasts = false;
 
-            _dragTween = transform.DOMove(targetPosition, 0.2f).SetEase(Ease.OutQuad);
-            _scaleTween = transform.DOScale(1.1f, 0.2f).SetEase(Ease.OutBack);
-            _rotateTween = transform.DORotate(new Vector3(0, 0, 5f), 0.2f);
+            _dragTween = transform.DOMove(targetPosition, 0.2f).SetEase(Ease.OutQuad).SetAutoKill(false);
+            _dragTween.OnKill(() => _dragTween = null);
+
+            _scaleTween = transform.DOScale(1.1f, 0.2f).SetEase(Ease.OutBack).SetAutoKill(false);
+            _scaleTween.OnKill(() => _scaleTween = null);
+
+            _rotateTween = transform.DORotate(new Vector3(0, 0, 5f), 0.2f).SetAutoKill(false);
+            _rotateTween.OnKill(() => _rotateTween = null);
         }
 
         private void PlayDragFollowAnimation(Vector3 targetPosition)
         {
             _dragTween?.Kill();
-            _dragTween = transform.DOMove(targetPosition, 0.15f).SetEase(Ease.OutQuad);
+            _dragTween = transform.DOMove(targetPosition, 0.08f).SetEase(Ease.OutQuad).SetAutoKill(false);
+            _dragTween.OnKill(() => _dragTween = null);
         }
 
-        private void PlaySwapAnimation()
-        {
-            KillAllTweens();
-
-            _fadeTween = canvasGroup.DOFade(1f, 0.15f);
-            _scaleTween = transform.DOScale(1.2f, 0.15f).SetLoops(2, LoopType.Yoyo).OnComplete(() =>
-            {
-                ResetTransformState();
-                ReturnToOriginalParent();
-                _scaleTween = null;
-            });
-        }
 
         private void PlayReturnAnimation()
         {
             _returnSequence?.Kill();
+            _isReturning = true;
 
             _returnSequence = DOTween.Sequence();
-            _returnSequence.Append(transform.DOMove(_originalPosition, 0.4f).SetEase(Ease.OutElastic, 1.2f, 0.3f));
+            _returnSequence.SetAutoKill(false);
+            _returnSequence.Append(transform.DOMove(_originalPosition, 0.4f).SetEase(Ease.OutElastic, 0.8f, 0.3f));
             _returnSequence.Join(transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack));
             _returnSequence.Join(transform.DORotate(Vector3.zero, 0.3f).SetEase(Ease.OutBack));
             _returnSequence.Join(canvasGroup.DOFade(1f, 0.3f));
             _returnSequence.OnComplete(() =>
             {
+                _isReturning = false;
                 ReturnToOriginalParent();
+                _returnSequence = null;
+            });
+            _returnSequence.OnKill(() =>
+            {
+                _isReturning = false;
                 _returnSequence = null;
             });
         }
@@ -198,12 +273,14 @@ namespace Inventory
             _scaleTween?.Kill();
             _rotateTween?.Kill();
             _fadeTween?.Kill();
+            _appearTween?.Kill();
             _returnSequence?.Kill();
 
             _dragTween = null;
             _scaleTween = null;
             _rotateTween = null;
             _fadeTween = null;
+            _appearTween = null;
             _returnSequence = null;
         }
 

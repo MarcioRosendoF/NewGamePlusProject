@@ -72,7 +72,7 @@ namespace Gameplay
 
             if (input.sqrMagnitude > 0.01f)
             {
-                var cardinalDir = GetCardinalDirection(input);
+                var cardinalDir = movementController.GetCardinalDirection(input);
                 animator.SetFloat(MoveXHash, cardinalDir.x);
                 animator.SetFloat(MoveYHash, cardinalDir.y);
             }
@@ -81,32 +81,6 @@ namespace Gameplay
         public void SetInteracting(bool state)
         {
             if (animator != null) animator.SetBool(IsInteractingHash, state);
-        }
-
-        private Vector2 GetCardinalDirection(Vector2 input)
-        {
-            if (input.sqrMagnitude < 0.01f) return Vector2.zero;
-
-            if (useFlipping)
-            {
-                if (Mathf.Abs(input.x) > Mathf.Abs(input.y))
-                {
-                    return input.x > 0 ? Vector2.right : Vector2.left;
-                }
-                else
-                {
-                    return input.y > 0 ? Vector2.up : Vector2.down;
-                }
-            }
-
-            if (Mathf.Abs(input.x) > Mathf.Abs(input.y))
-            {
-                return input.x > 0 ? Vector2.right : Vector2.left;
-            }
-            else
-            {
-                return input.y > 0 ? Vector2.up : Vector2.down;
-            }
         }
     }
 }

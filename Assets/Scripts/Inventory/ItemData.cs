@@ -12,11 +12,20 @@ namespace Inventory
     [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item Data")]
     public class ItemData : ScriptableObject
     {
-        private string guidString;
+        [SerializeField] private string guidString;
         public string itemName;
         public Sprite icon;
         [TextArea] public string description;
         public ItemType type;
+        [TextArea] public string usageDescription;
+        [Header("Visual (Equippables Only)")]
+        [Tooltip("Sprite shown overhead when equipped")]
+        public Sprite equippedSprite;
+        [Tooltip("Sprite shown overhead when using (F key)")]
+        public Sprite useSprite;
+
+        [Header("Behavior")]
+        public GameObject behaviorPrefab;
 
         private Guid? _cachedGuid;
         public Guid Guid
