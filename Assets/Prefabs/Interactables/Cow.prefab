@@ -154,12 +154,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5983081689593065800}
-  - component: {fileID: 5835159738420736587}
   - component: {fileID: 4010473305032975264}
   - component: {fileID: 8279023241404724027}
   - component: {fileID: 7565846401537771499}
   - component: {fileID: 7090768820130108823}
-  m_Layer: 0
+  - component: {fileID: 1294727052170928822}
+  m_Layer: 6
   m_Name: Cow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -182,20 +182,6 @@ Transform:
   - {fileID: 3274546107107688002}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5835159738420736587
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8678738940814264469}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97bb4baeddb2d854c9d610e688be47ad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Gameplay.NPC
-  npcName: NPC
-  dialogueMessage: Hello, traveler!
 --- !u!50 &4010473305032975264
 Rigidbody2D:
   serializedVersion: 5
@@ -301,3 +287,23 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.0136051, y: 0.21999788}
   m_EdgeRadius: 0
+--- !u!114 &1294727052170928822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8678738940814264469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee6f3a98651f02d4ea1cb4e7510fc83c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Gameplay.InteractiveDecor
+  promptMessage: Interact
+  interactSound: {fileID: 11400000, guid: 8dd50a41f08262d439a896b0aa9bc70c, type: 2}
+  spriteRenderer: {fileID: 1663442546104451856}
+  squashDuration: 0.12
+  returnDuration: 0.18
+  squashScaleMultiplier: 0.7
+  squashOffsetYMultiplier: 0.15
+  cooldownTime: 1.6

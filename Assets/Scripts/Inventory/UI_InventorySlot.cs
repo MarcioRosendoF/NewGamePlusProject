@@ -19,6 +19,7 @@ namespace Inventory
         public UI_InventoryItem CurrentItem => _currentItem;
         public Transform ItemContainer => itemContainer != null ? itemContainer : transform;
         public InventoryView InventoryView => _inventoryView;
+        public int SlotIndex => _slotIndex;
 
         private void Awake()
         {
@@ -54,7 +55,13 @@ namespace Inventory
             }
             else
             {
-                ClearItem();
+                if (_currentItem != null)
+                {
+                    _currentItem.PlayDisappearAnimation(() =>
+                    {
+                        _currentItem = null;
+                    });
+                }
             }
         }
 

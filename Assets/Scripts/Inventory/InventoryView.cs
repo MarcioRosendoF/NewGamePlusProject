@@ -24,6 +24,7 @@ namespace Inventory
 
         public bool IsVisible { get; private set; }
         public bool IsAnimating => _isAnimating;
+        public RectTransform PanelTransform => panelTransform;
         private bool _isAnimating;
         private Tween _currentTween;
 

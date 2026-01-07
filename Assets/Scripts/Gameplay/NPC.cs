@@ -14,19 +14,15 @@ namespace Gameplay
 
         public void Interact()
         {
-            if (isInteracting) return;
+            if (isInteracting)
+            {
+                EndInteraction();
+                return;
+            }
 
             isInteracting = true;
             OnInteractionStarted?.Invoke();
             Debug.Log($"<color=cyan>[{npcName}]:</color> {dialogueMessage}");
-        }
-
-        private void Update()
-        {
-            if (isInteracting && Input.GetKeyDown(KeyCode.E))
-            {
-                EndInteraction();
-            }
         }
 
         private void EndInteraction()

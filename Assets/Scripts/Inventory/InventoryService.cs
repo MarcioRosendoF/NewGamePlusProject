@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Core;
+using DG.Tweening;
+using Gameplay;
 
 namespace Inventory
 {
@@ -12,6 +14,8 @@ namespace Inventory
         [SerializeField] private ItemDatabase itemDatabase;
         [Header("Audio")]
         [SerializeField] private SoundEffectSO genericUseSound;
+        [SerializeField] private GameObject worldItemPrefab;
+        [SerializeField] private float dropDistance = 0.5f;
 
         private const int MAX_SLOTS = 9;
         private const float CONSUMABLE_COOLDOWN = 0.5f;
@@ -85,9 +89,16 @@ namespace Inventory
         {
             if (index >= 0 && index < _slots.Count && !_slots[index].IsEmpty)
             {
+                var itemGuid = _slots[index].itemGuid;
                 _slots[index].amount -= amount;
+
                 if (_slots[index].amount <= 0)
                 {
+                    if (IsItemEquipped(itemGuid))
+                    {
+                        EquipmentManager.Instance?.UnequipItem();
+                    }
+
                     _slots[index].itemGuid = Guid.Empty;
                     _slots[index].amount = 0;
                 }
@@ -240,6 +251,59 @@ namespace Inventory
             }
 
             OnInventoryChanged?.Invoke();
+        }
+
+        public void DropItem(int index)
+        {
+            if (index < 0 || index >= _slots.Count || _slots[index].IsEmpty)
+                return;
+
+            var itemData = GetItemAt(index);
+            var amount = _slots[index].amount;
+
+            if (itemData == null || worldItemPrefab == null)
+                return;
+
+            if (TryGetPlayerAndDirection(out var player, out var facingDir))
+            {
+                CalculateDropPositions(player.transform.position, facingDir, out var spawnPos, out var targetPos);
+                SpawnAndAnimateItem(itemData, amount, spawnPos, targetPos);
+            }
+
+            RemoveItem(index, amount);
+        }
+
+        private bool TryGetPlayerAndDirection(out GameObject player, out Vector2 facingDir)
+        {
+            player = GameObject.FindGameObjectWithTag("Player");
+            facingDir = Vector2.down;
+
+            if (player == null) return false;
+
+            var movement = player.GetComponent<MovementController>();
+            if (movement != null)
+            {
+                facingDir = movement.LastMoveInput;
+            }
+            return true;
+        }
+
+        private void CalculateDropPositions(Vector3 playerPos, Vector2 facingDir, out Vector3 spawnPos, out Vector3 targetPos)
+        {
+            spawnPos = (Vector2)playerPos + facingDir * 0.5f;
+            targetPos = (Vector2)spawnPos + facingDir * dropDistance;
+        }
+
+        private void SpawnAndAnimateItem(ItemData itemData, int amount, Vector3 spawnPos, Vector3 targetPos)
+        {
+            var itemObj = Instantiate(worldItemPrefab, spawnPos, Quaternion.identity);
+            var collectible = itemObj.GetComponent<CollectibleItem>();
+
+            if (collectible != null)
+            {
+                collectible.Initialize(itemData, amount);
+                collectible.AnimateDrop(targetPos);
+            }
         }
     }
 }

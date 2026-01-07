@@ -195,9 +195,9 @@ namespace Inventory
             _scaleTween?.Kill();
             _rotateTween?.Kill();
 
-            canvasGroup.blocksRaycasts = true;
-
             var targetSlot = GetSlotUnderCursor(eventData);
+
+            canvasGroup.blocksRaycasts = true;
 
             if (targetSlot != null && targetSlot != _originSlot)
             {
@@ -206,11 +206,48 @@ namespace Inventory
                 KillAllTweens();
                 Destroy(gameObject);
             }
+            else if (targetSlot == null)
+            {
+                TryDropItemOutside(eventData);
+            }
             else
             {
                 _dropMousePosition = Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
                 PlayReturnAnimation();
             }
+        }
+
+        private void TryDropItemOutside(PointerEventData eventData)
+        {
+            var isOverPanel = IsOverInventoryPanel(eventData.position);
+
+            if (!isOverPanel)
+            {
+                if (InventoryService.Instance != null && _originSlot != null)
+                {
+                    _originSlot.ClearCurrentItemReference();
+                    InventoryService.Instance.DropItem(_originSlot.SlotIndex);
+                }
+
+                if (TooltipSystem.Instance != null) TooltipSystem.Instance.Hide();
+                KillAllTweens();
+                Destroy(gameObject);
+            }
+            else
+            {
+                _dropMousePosition = Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
+                PlayReturnAnimation();
+            }
+        }
+
+        private bool IsOverInventoryPanel(Vector2 position)
+        {
+            if (_originSlot == null || _originSlot.InventoryView == null) return false;
+
+            return RectTransformUtility.RectangleContainsScreenPoint(
+                _originSlot.InventoryView.PanelTransform,
+                position,
+                _originSlot.InventoryView.GetComponentInParent<Canvas>().worldCamera);
         }
 
         private UI_InventorySlot GetSlotUnderCursor(PointerEventData eventData)

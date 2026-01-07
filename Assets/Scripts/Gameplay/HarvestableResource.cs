@@ -22,6 +22,7 @@ namespace Gameplay
 
         [Header("Audio")]
         [SerializeField] private SoundEffectSO harvestSound;
+        [SerializeField] private SoundEffectSO cooldownSound;
 
         private bool isHarvested;
         private bool isAnimating;
@@ -167,6 +168,9 @@ namespace Gameplay
 #if UNITY_EDITOR
             Debug.Log("[HarvestableResource] Resource is empty, playing shake feedback.");
 #endif
+
+            if (cooldownSound != null && AudioManager.Instance != null)
+                AudioManager.Instance.PlaySound(cooldownSound);
 
             _activeTween = spriteRenderer.transform.DOShakePosition(0.25f, new Vector3(0.08f, 0, 0), 30, 0, false)
                 .OnComplete(() =>
