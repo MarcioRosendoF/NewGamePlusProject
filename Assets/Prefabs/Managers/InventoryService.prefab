@@ -45,4 +45,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Inventory.InventoryService
   itemDatabase: {fileID: 11400000, guid: 566349c1af9cbe141b92f53238f9cafd, type: 2}
-  maxSlots: 20
+  genericUseSound: {fileID: 11400000, guid: b4457f24727797c40b35d72daba55c36, type: 2}

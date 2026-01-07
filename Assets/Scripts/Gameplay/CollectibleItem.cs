@@ -1,6 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
 using Inventory;
+using Core;
 
 namespace Gameplay
 {
@@ -8,6 +9,7 @@ namespace Gameplay
     {
         [SerializeField] private ItemData itemData;
         [SerializeField] private int amount = 1;
+        [SerializeField] private SoundEffectSO pickupSound;
 
         public void Interact()
         {
@@ -21,6 +23,9 @@ namespace Gameplay
 
             if (success)
             {
+                if (pickupSound != null && AudioManager.Instance != null)
+                    AudioManager.Instance.PlaySound(pickupSound);
+
                 transform.DOScale(0f, 0.2f)
                     .SetEase(Ease.InBack)
                     .OnComplete(() => Destroy(gameObject));

@@ -280,3 +280,4 @@ MonoBehaviour:
   fullSprite: {fileID: 136431240195381786, guid: 53ca57767b73f604d99fbbb460212b08, type: 3}
   emptySprite: {fileID: -2388770947731681099, guid: 53ca57767b73f604d99fbbb460212b08, type: 3}
   respawnTime: 15
+  harvestSound: {fileID: 11400000, guid: e82195cb0c3b07a4181ccac12c089c82, type: 2}

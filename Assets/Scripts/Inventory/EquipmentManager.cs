@@ -1,11 +1,16 @@
 using System;
 using UnityEngine;
+using Core;
 
 namespace Inventory
 {
     public class EquipmentManager : MonoBehaviour
     {
         public static EquipmentManager Instance { get; private set; }
+
+        [Header("Audio")]
+        [SerializeField] private SoundEffectSO equipSound;
+        [SerializeField] private SoundEffectSO unequipSound;
 
         private Guid _equippedItemGuid = Guid.Empty;
 
@@ -28,6 +33,10 @@ namespace Inventory
         public void EquipItem(ItemData itemData)
         {
             _equippedItemGuid = itemData.Guid;
+
+            if (equipSound != null && AudioManager.Instance != null)
+                AudioManager.Instance.PlaySound(equipSound);
+
             OnItemEquipped?.Invoke(itemData);
 #if UNITY_EDITOR
             Debug.Log($"[EquipmentManager] Equipped item: {itemData.itemName}");
@@ -37,6 +46,10 @@ namespace Inventory
         public void UnequipItem()
         {
             _equippedItemGuid = Guid.Empty;
+
+            if (unequipSound != null && AudioManager.Instance != null)
+                AudioManager.Instance.PlaySound(unequipSound);
+
             OnItemUnequipped?.Invoke();
 #if UNITY_EDITOR
             Debug.Log("[EquipmentManager] Item unequipped");

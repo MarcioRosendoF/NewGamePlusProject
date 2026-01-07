@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using DG.Tweening;
 using Inventory;
+using Core;
 
 namespace Gameplay
 {
@@ -18,6 +19,9 @@ namespace Gameplay
 
         [Header("Respawn Settings")]
         [SerializeField] private float respawnTime = 30f;
+
+        [Header("Audio")]
+        [SerializeField] private SoundEffectSO harvestSound;
 
         private bool isHarvested;
         private bool isAnimating;
@@ -131,6 +135,9 @@ namespace Gameplay
         private void Harvest()
         {
             isHarvested = true;
+
+            if (harvestSound != null && AudioManager.Instance != null)
+                AudioManager.Instance.PlaySound(harvestSound);
 
             if (spriteRenderer != null && emptySprite != null)
                 spriteRenderer.sprite = emptySprite;

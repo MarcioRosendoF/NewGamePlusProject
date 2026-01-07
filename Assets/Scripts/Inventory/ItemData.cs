@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using Core;
 
 namespace Inventory
 {
@@ -26,6 +27,10 @@ namespace Inventory
 
         [Header("Behavior")]
         public GameObject behaviorPrefab;
+
+        [Header("Audio")]
+        [Tooltip("Optional: Override generic use sound for this specific item")]
+        public SoundEffectSO useSound;
 
         private Guid? _cachedGuid;
         public Guid Guid

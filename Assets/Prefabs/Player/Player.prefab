@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b6962804bcd8d24c8d4121e1f9d6637, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Gameplay.AnimationController
-  animator: {fileID: 0}
+  animator: {fileID: 579810256605906534}
   spriteRenderer: {fileID: 8291343738748347082}
   movementController: {fileID: 4984616113394224310}
   useFlipping: 0

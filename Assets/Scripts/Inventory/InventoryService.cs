@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Core;
 
 namespace Inventory
 {
@@ -9,6 +10,9 @@ namespace Inventory
         public static InventoryService Instance { get; private set; }
 
         [SerializeField] private ItemDatabase itemDatabase;
+        [Header("Audio")]
+        [SerializeField] private SoundEffectSO genericUseSound;
+
         private const int MAX_SLOTS = 9;
 
         private List<InventorySlot> _slots = new List<InventorySlot>();
@@ -128,6 +132,7 @@ namespace Inventory
             if (itemData.type == ItemType.Consumable)
             {
                 ExecuteItemBehavior(itemData);
+                PlayItemUseSound(itemData);
                 OnItemUsed?.Invoke(itemData);
 
 #if UNITY_EDITOR
@@ -169,6 +174,7 @@ namespace Inventory
                 return false;
 
             ExecuteItemBehavior(itemData);
+            PlayItemUseSound(itemData);
             OnItemUsed?.Invoke(itemData);
 
 #if UNITY_EDITOR
@@ -191,6 +197,15 @@ namespace Inventory
                     }
                 }
             }
+        }
+
+        private void PlayItemUseSound(ItemData itemData)
+        {
+            if (AudioManager.Instance == null) return;
+
+            var soundToPlay = itemData.useSound != null ? itemData.useSound : genericUseSound;
+            if (soundToPlay != null)
+                AudioManager.Instance.PlaySound(soundToPlay);
         }
 
         public void LoadFromSlots(List<InventorySlot> slots)

@@ -18,6 +18,10 @@ namespace Inventory
         [SerializeField] private Vector2 visiblePosition = new Vector2(1400, 0);
         [SerializeField] private float animationDuration = 0.5f;
 
+        [Header("Audio")]
+        [SerializeField] private SoundEffectSO openSound;
+        [SerializeField] private SoundEffectSO closeSound;
+
         public bool IsVisible { get; private set; }
         public bool IsAnimating => _isAnimating;
         private bool _isAnimating;
@@ -88,6 +92,9 @@ namespace Inventory
             gameObject.SetActive(true);
             IsVisible = true;
 
+            if (openSound != null && AudioManager.Instance != null)
+                AudioManager.Instance.PlaySound(openSound);
+
             if (canvasGroup != null)
                 canvasGroup.blocksRaycasts = false;
 
@@ -109,6 +116,9 @@ namespace Inventory
 
             if (TooltipSystem.Instance != null)
                 TooltipSystem.Instance.Hide();
+
+            if (closeSound != null && AudioManager.Instance != null)
+                AudioManager.Instance.PlaySound(closeSound);
 
             _currentTween?.Kill();
             _isAnimating = true;

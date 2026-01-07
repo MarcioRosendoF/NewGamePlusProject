@@ -264,11 +264,13 @@ MonoBehaviour:
   - {fileID: 2982068013373310945}
   - {fileID: 3796087225567785584}
   panelTransform: {fileID: 976533645872653905}
-  canvasGroup: {fileID: 0}
+  canvasGroup: {fileID: 3230014255883048390}
   itemPrefab: {fileID: 8622399697421875201, guid: 2cd2e61e536fac6429bb18785f6148c3, type: 3}
   hiddenPosition: {x: 1406, y: 0}
   visiblePosition: {x: 414, y: 0}
   animationDuration: 0.3
+  openSound: {fileID: 11400000, guid: 4543a989954b9f545af44f734b290d1f, type: 2}
+  closeSound: {fileID: 11400000, guid: 13190b9bf05c8a04984ba569a4ce5cea, type: 2}
 --- !u!225 &3230014255883048390
 CanvasGroup:
   m_ObjectHideFlags: 0
