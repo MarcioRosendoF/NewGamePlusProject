@@ -10,23 +10,23 @@ namespace Gameplay
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float runSpeedMultiplier = 1.5f;
 
-        private Vector2 moveInput;
-        private Vector2 lastMoveInput;
-        private bool isRunning;
-        private Rigidbody2D rb;
+        private Vector2 _moveInput;
+        private Vector2 _lastMoveInput;
+        private bool _isRunning;
+        private Rigidbody2D _rb;
 
-        public Vector2 MoveInput => moveInput;
-        public Vector2 LastMoveInput => lastMoveInput;
-        public bool IsRunning => isRunning;
+        public Vector2 MoveInput => _moveInput;
+        public Vector2 LastMoveInput => _lastMoveInput;
+        public bool IsRunning => _isRunning;
         public float MoveSpeed => moveSpeed;
         public float RunSpeedMultiplier => runSpeedMultiplier;
 
         private void Awake()
         {
-            rb = GetComponent<Rigidbody2D>();
-            rb.gravityScale = 0;
-            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-            lastMoveInput = Vector2.down;
+            _rb = GetComponent<Rigidbody2D>();
+            _rb.gravityScale = 0;
+            _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+            _lastMoveInput = Vector2.down;
         }
 
         public void OnMove(InputValue value)
@@ -41,17 +41,17 @@ namespace Gameplay
 
         public void SetMoveInput(Vector2 input)
         {
-            moveInput = input;
+            _moveInput = input;
 
-            if (moveInput.sqrMagnitude > 0.01f)
+            if (_moveInput.sqrMagnitude > 0.01f)
             {
-                lastMoveInput = GetCardinalDirection(moveInput);
+                _lastMoveInput = GetCardinalDirection(_moveInput);
             }
         }
 
         public void SetRunning(bool state)
         {
-            isRunning = state;
+            _isRunning = state;
         }
 
         public void SetSpeed(float speed)
@@ -63,7 +63,7 @@ namespace Gameplay
         {
             if (direction.sqrMagnitude > 0.01f)
             {
-                lastMoveInput = GetCardinalDirection(direction);
+                _lastMoveInput = GetCardinalDirection(direction);
             }
         }
 
@@ -83,16 +83,16 @@ namespace Gameplay
 
         private void FixedUpdate()
         {
-            var moveDir = moveInput;
+            var moveDir = _moveInput;
             if (moveDir.sqrMagnitude > 1f)
             {
                 moveDir.Normalize();
             }
 
-            var targetSpeed = isRunning ? moveSpeed * runSpeedMultiplier : moveSpeed;
-            rb.linearVelocity = moveDir * targetSpeed;
+            var targetSpeed = _isRunning ? moveSpeed * runSpeedMultiplier : moveSpeed;
+            _rb.linearVelocity = moveDir * targetSpeed;
         }
 
-        public float GetCurrentSpeed() => moveInput.magnitude;
+        public float GetCurrentSpeed() => _moveInput.magnitude;
     }
 }

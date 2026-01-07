@@ -4,6 +4,7 @@ using UnityEngine;
 using Core;
 using DG.Tweening;
 using Gameplay;
+using Inventory;
 
 namespace Inventory
 {
@@ -11,7 +12,8 @@ namespace Inventory
     {
         public static InventoryService Instance { get; private set; }
 
-        [SerializeField] private ItemDatabase itemDatabase;
+        [SerializeField]
+        private ItemDatabase itemDatabase;
         [Header("Audio")]
         [SerializeField] private SoundEffectSO genericUseSound;
         [SerializeField] private GameObject worldItemPrefab;

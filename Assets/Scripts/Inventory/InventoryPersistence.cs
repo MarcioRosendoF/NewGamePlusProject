@@ -5,7 +5,7 @@ namespace Inventory
 {
     public class InventoryPersistence : MonoBehaviour
     {
-        InventoryService inventoryService;
+        private InventoryService _inventoryService;
 
         private const string SaveFileName = "inventory_save.json";
         private const float SAVE_DEBOUNCE_INTERVAL = 0.5f;
@@ -15,12 +15,12 @@ namespace Inventory
 
         private void Start()
         {
-            inventoryService = InventoryService.Instance;
+            _inventoryService = InventoryService.Instance;
             LoadInventory();
 
-            if (inventoryService != null)
+            if (_inventoryService != null)
             {
-                inventoryService.OnInventoryChanged += MarkDirty;
+                _inventoryService.OnInventoryChanged += MarkDirty;
             }
         }
 
@@ -36,9 +36,9 @@ namespace Inventory
 
         private void OnDestroy()
         {
-            if (inventoryService != null)
+            if (_inventoryService != null)
             {
-                inventoryService.OnInventoryChanged -= MarkDirty;
+                _inventoryService.OnInventoryChanged -= MarkDirty;
             }
 
 #if UNITY_EDITOR
@@ -69,9 +69,9 @@ namespace Inventory
 
         public void SaveInventory()
         {
-            if (inventoryService == null) return;
+            if (_inventoryService == null) return;
 
-            var saveData = new InventorySaveData(inventoryService.GetAllSlots());
+            var saveData = new InventorySaveData(_inventoryService.GetAllSlots());
             FileHandler.SaveToFile(saveData, SaveFileName);
         }
 
@@ -85,7 +85,7 @@ namespace Inventory
                 {
                     slots.Add(serializedSlot.ToInventorySlot());
                 }
-                inventoryService.LoadFromSlots(slots);
+                _inventoryService.LoadFromSlots(slots);
             }
         }
     }

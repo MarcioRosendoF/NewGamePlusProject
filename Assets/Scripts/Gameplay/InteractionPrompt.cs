@@ -15,10 +15,10 @@ namespace Gameplay
         [SerializeField] private float floatDistance = 10f;
         [SerializeField] private float floatDuration = 1.5f;
 
-        private Interactor playerInteractor;
-        private Transform targetTransform;
-        private Sequence floatSequence;
-        private Vector3 baseOffset = new Vector3(0, 1.5f, 0);
+        private Interactor _playerInteractor;
+        private Transform _targetTransform;
+        private Sequence _floatSequence;
+        private Vector3 _baseOffset = new Vector3(0, 1.5f, 0);
 
         private void Awake()
         {
@@ -33,29 +33,29 @@ namespace Gameplay
             var player = GameObject.FindGameObjectWithTag("Player");
             if (player != null)
             {
-                playerInteractor = player.GetComponent<Interactor>();
-                if (playerInteractor != null)
+                _playerInteractor = player.GetComponent<Interactor>();
+                if (_playerInteractor != null)
                 {
-                    playerInteractor.OnInteractableChanged += OnInteractableChanged;
+                    _playerInteractor.OnInteractableChanged += OnInteractableChanged;
                 }
             }
         }
 
         private void OnDestroy()
         {
-            if (playerInteractor != null)
+            if (_playerInteractor != null)
             {
-                playerInteractor.OnInteractableChanged -= OnInteractableChanged;
+                _playerInteractor.OnInteractableChanged -= OnInteractableChanged;
             }
-            
+
             KillTweens();
         }
 
         private void Update()
         {
-            if (targetTransform != null && canvasGroup.alpha > 0)
+            if (_targetTransform != null && canvasGroup.alpha > 0)
             {
-                transform.position = targetTransform.position + baseOffset;
+                transform.position = _targetTransform.position + _baseOffset;
             }
         }
 
@@ -77,24 +77,24 @@ namespace Gameplay
 
         private void Show(string prompt, Transform target)
         {
-            targetTransform = target;
+            _targetTransform = target;
             promptText.text = $"[E] {prompt}";
-            transform.position = target.position + baseOffset;
+            transform.position = target.position + _baseOffset;
 
             KillTweens();
 
             canvasGroup.DOFade(1f, fadeDuration).SetEase(Ease.OutQuad);
             transform.DOScale(1f, fadeDuration).From(0.8f).SetEase(Ease.OutBack);
 
-            floatSequence = DOTween.Sequence();
-            floatSequence.Append(transform.DOMoveY(transform.position.y + floatDistance / 100f, floatDuration).SetEase(Ease.InOutSine));
-            floatSequence.Append(transform.DOMoveY(transform.position.y, floatDuration).SetEase(Ease.InOutSine));
-            floatSequence.SetLoops(-1);
+            _floatSequence = DOTween.Sequence();
+            _floatSequence.Append(transform.DOMoveY(transform.position.y + floatDistance / 100f, floatDuration).SetEase(Ease.InOutSine));
+            _floatSequence.Append(transform.DOMoveY(transform.position.y, floatDuration).SetEase(Ease.InOutSine));
+            _floatSequence.SetLoops(-1);
         }
 
         private void Hide()
         {
-            targetTransform = null;
+            _targetTransform = null;
             KillTweens();
 
             canvasGroup.DOFade(0f, fadeDuration).SetEase(Ease.InQuad);
@@ -105,7 +105,7 @@ namespace Gameplay
         {
             canvasGroup.DOKill();
             transform.DOKill();
-            floatSequence?.Kill();
+            _floatSequence?.Kill();
         }
     }
 }

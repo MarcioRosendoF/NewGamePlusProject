@@ -24,10 +24,10 @@ namespace Gameplay
         [SerializeField] private SoundEffectSO harvestSound;
         [SerializeField] private SoundEffectSO cooldownSound;
 
-        private bool isHarvested;
-        private bool isAnimating;
-        private Vector3 originalPosition;
-        private Vector3 originalScale;
+        private bool _isHarvested;
+        private bool _isAnimating;
+        private Vector3 _originalPosition;
+        private Vector3 _originalScale;
 
         private Tween _activeTween;
         private Sequence _activeSequence;
@@ -40,8 +40,8 @@ namespace Gameplay
             if (fullSprite == null && spriteRenderer != null)
                 fullSprite = spriteRenderer.sprite;
 
-            originalPosition = spriteRenderer.transform.localPosition;
-            originalScale = spriteRenderer.transform.localScale;
+            _originalPosition = spriteRenderer.transform.localPosition;
+            _originalScale = spriteRenderer.transform.localScale;
         }
 
         private void OnDestroy()
@@ -67,8 +67,8 @@ namespace Gameplay
 
             if (spriteRenderer != null)
             {
-                spriteRenderer.transform.localPosition = originalPosition;
-                spriteRenderer.transform.localScale = originalScale;
+                spriteRenderer.transform.localPosition = _originalPosition;
+                spriteRenderer.transform.localScale = _originalScale;
 
                 var color = spriteRenderer.color;
                 if (color.a < 1f)
@@ -79,7 +79,7 @@ namespace Gameplay
             }
         }
 
-        public bool IsFull => !isHarvested;
+        public bool IsFull => !_isHarvested;
 
         public void InstantRegenerate()
         {
@@ -87,7 +87,7 @@ namespace Gameplay
 
             StopAllCoroutines();
 
-            isHarvested = false;
+            _isHarvested = false;
 
             if (spriteRenderer != null && fullSprite != null)
             {
@@ -99,9 +99,9 @@ namespace Gameplay
 
         public void Interact()
         {
-            if (isAnimating) return;
+            if (_isAnimating) return;
 
-            if (isHarvested)
+            if (_isHarvested)
             {
                 PlayCooldownShake();
                 return;
@@ -127,7 +127,7 @@ namespace Gameplay
 
         public string GetInteractPrompt()
         {
-            if (isHarvested)
+            if (_isHarvested)
                 return "Empty";
 
             return itemData != null ? $"Harvest {itemData.itemName}" : "Harvest";
@@ -135,7 +135,7 @@ namespace Gameplay
 
         private void Harvest()
         {
-            isHarvested = true;
+            _isHarvested = true;
 
             if (harvestSound != null && AudioManager.Instance != null)
                 AudioManager.Instance.PlaySound(harvestSound);
@@ -151,7 +151,7 @@ namespace Gameplay
         {
             yield return new WaitForSeconds(respawnTime);
 
-            while (isAnimating) yield return null;
+            while (_isAnimating) yield return null;
 
             if (spriteRenderer != null && fullSprite != null)
             {
@@ -163,7 +163,7 @@ namespace Gameplay
         private void PlayCooldownShake()
         {
             ResetVisuals();
-            isAnimating = true;
+            _isAnimating = true;
 
 #if UNITY_EDITOR
             Debug.Log("[HarvestableResource] Resource is empty, playing shake feedback.");
@@ -175,30 +175,30 @@ namespace Gameplay
             _activeTween = spriteRenderer.transform.DOShakePosition(0.25f, new Vector3(0.08f, 0, 0), 30, 0, false)
                 .OnComplete(() =>
                 {
-                    spriteRenderer.transform.localPosition = originalPosition;
-                    isAnimating = false;
+                    spriteRenderer.transform.localPosition = _originalPosition;
+                    _isAnimating = false;
                 });
         }
 
         private void PlayHarvestSquash()
         {
             ResetVisuals();
-            isAnimating = true;
+            _isAnimating = true;
 
             var offsetY = spriteRenderer.bounds.size.y * 0.15f;
 
             _activeSequence = DOTween.Sequence();
-            _activeSequence.Append(spriteRenderer.transform.DOLocalMoveY(originalPosition.y - offsetY, 0.12f).SetEase(Ease.InQuad));
-            _activeSequence.Join(spriteRenderer.transform.DOScaleY(originalScale.y * 0.7f, 0.12f).SetEase(Ease.InQuad));
-            _activeSequence.Append(spriteRenderer.transform.DOLocalMoveY(originalPosition.y, 0.18f).SetEase(Ease.OutBack));
-            _activeSequence.Join(spriteRenderer.transform.DOScaleY(originalScale.y, 0.18f).SetEase(Ease.OutBack));
-            _activeSequence.OnComplete(() => isAnimating = false);
+            _activeSequence.Append(spriteRenderer.transform.DOLocalMoveY(_originalPosition.y - offsetY, 0.12f).SetEase(Ease.InQuad));
+            _activeSequence.Join(spriteRenderer.transform.DOScaleY(_originalScale.y * 0.7f, 0.12f).SetEase(Ease.InQuad));
+            _activeSequence.Append(spriteRenderer.transform.DOLocalMoveY(_originalPosition.y, 0.18f).SetEase(Ease.OutBack));
+            _activeSequence.Join(spriteRenderer.transform.DOScaleY(_originalScale.y, 0.18f).SetEase(Ease.OutBack));
+            _activeSequence.OnComplete(() => _isAnimating = false);
         }
 
         private void PlayRespawnAnimation()
         {
             ResetVisuals();
-            isAnimating = true;
+            _isAnimating = true;
 
             var color = spriteRenderer.color;
             color.a = 0f;
@@ -207,11 +207,11 @@ namespace Gameplay
             _activeSequence = DOTween.Sequence();
             _activeSequence.Append(spriteRenderer.DOFade(1f, 0.5f).SetEase(Ease.OutQuad));
             _activeSequence.AppendInterval(0.1f);
-            _activeSequence.Append(spriteRenderer.transform.DOPunchScale(originalScale * 0.15f, 0.4f, 5, 0.5f));
+            _activeSequence.Append(spriteRenderer.transform.DOPunchScale(_originalScale * 0.15f, 0.4f, 5, 0.5f));
             _activeSequence.OnComplete(() =>
             {
-                isHarvested = false;
-                isAnimating = false;
+                _isHarvested = false;
+                _isAnimating = false;
             });
         }
     }

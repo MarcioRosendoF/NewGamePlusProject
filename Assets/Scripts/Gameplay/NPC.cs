@@ -10,30 +10,30 @@ namespace Gameplay
         public event System.Action OnInteractionStarted;
         public event System.Action OnInteractionEnded;
 
-        private bool isInteracting;
+        private bool _isInteracting;
 
         public void Interact()
         {
-            if (isInteracting)
+            if (_isInteracting)
             {
                 EndInteraction();
                 return;
             }
 
-            isInteracting = true;
+            _isInteracting = true;
             OnInteractionStarted?.Invoke();
             Debug.Log($"<color=cyan>[{npcName}]:</color> {dialogueMessage}");
         }
 
         private void EndInteraction()
         {
-            isInteracting = false;
+            _isInteracting = false;
             OnInteractionEnded?.Invoke();
         }
 
         public string GetInteractPrompt()
         {
-            return isInteracting ? "Continue..." : $"Talk to {npcName}";
+            return _isInteracting ? "Continue..." : $"Talk to {npcName}";
         }
     }
 }

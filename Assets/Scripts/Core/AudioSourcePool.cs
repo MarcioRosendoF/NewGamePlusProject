@@ -9,7 +9,7 @@ namespace Core
         [SerializeField] private AudioSource audioSourcePrefab;
         [SerializeField] private int poolSize = 30;
 
-        private Queue<AudioSource> availableAudioSources = new Queue<AudioSource>();
+        private Queue<AudioSource> _availableAudioSources = new Queue<AudioSource>();
 
         private void Start()
         {
@@ -17,15 +17,15 @@ namespace Core
             {
                 var audioSource = Instantiate(audioSourcePrefab, transform);
                 audioSource.gameObject.SetActive(false);
-                availableAudioSources.Enqueue(audioSource);
+                _availableAudioSources.Enqueue(audioSource);
             }
         }
 
         public AudioSource GetAudioSource()
         {
-            if (availableAudioSources.Count > 0)
+            if (_availableAudioSources.Count > 0)
             {
-                var audioSource = availableAudioSources.Dequeue();
+                var audioSource = _availableAudioSources.Dequeue();
                 audioSource.gameObject.SetActive(true);
                 return audioSource;
             }
@@ -39,7 +39,7 @@ namespace Core
         public void ReturnAudioSource(AudioSource audioSource)
         {
             audioSource.gameObject.SetActive(false);
-            availableAudioSources.Enqueue(audioSource);
+            _availableAudioSources.Enqueue(audioSource);
         }
     }
 }

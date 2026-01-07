@@ -46,3 +46,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Inventory.InventoryService
   itemDatabase: {fileID: 11400000, guid: 566349c1af9cbe141b92f53238f9cafd, type: 2}
   genericUseSound: {fileID: 11400000, guid: b4457f24727797c40b35d72daba55c36, type: 2}
+  worldItemPrefab: {fileID: 5237821018688045278, guid: 9d2b4022b38f2364c80c5e5ecddb1474, type: 3}
+  dropDistance: 0.5

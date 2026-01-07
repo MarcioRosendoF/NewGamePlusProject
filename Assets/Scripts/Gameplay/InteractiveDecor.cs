@@ -20,10 +20,10 @@ namespace Gameplay
         [SerializeField] private float squashOffsetYMultiplier = 0.15f;
         [SerializeField] private float cooldownTime = 0.5f;
 
-        private bool isAnimating;
-        private float lastInteractTime;
-        private Vector3 originalPosition;
-        private Vector3 originalScale;
+        private bool _isAnimating;
+        private float _lastInteractTime;
+        private Vector3 _originalPosition;
+        private Vector3 _originalScale;
 
         private Tween _activeTween;
         private Sequence _activeSequence;
@@ -33,8 +33,8 @@ namespace Gameplay
             if (spriteRenderer == null)
                 spriteRenderer = GetComponent<SpriteRenderer>();
 
-            originalPosition = spriteRenderer.transform.localPosition;
-            originalScale = spriteRenderer.transform.localScale;
+            _originalPosition = spriteRenderer.transform.localPosition;
+            _originalScale = spriteRenderer.transform.localScale;
         }
 
         private void OnDestroy()
@@ -60,8 +60,8 @@ namespace Gameplay
 
             if (spriteRenderer != null)
             {
-                spriteRenderer.transform.localPosition = originalPosition;
-                spriteRenderer.transform.localScale = originalScale;
+                spriteRenderer.transform.localPosition = _originalPosition;
+                spriteRenderer.transform.localScale = _originalScale;
 
                 var color = spriteRenderer.color;
                 if (color.a < 1f)
@@ -74,9 +74,9 @@ namespace Gameplay
 
         public void Interact()
         {
-            if (isAnimating || Time.time < lastInteractTime + cooldownTime) return;
+            if (_isAnimating || Time.time < _lastInteractTime + cooldownTime) return;
 
-            lastInteractTime = Time.time;
+            _lastInteractTime = Time.time;
 
             if (interactSound != null && AudioManager.Instance != null)
                 AudioManager.Instance.PlaySound(interactSound);
@@ -92,16 +92,16 @@ namespace Gameplay
         private void PlaySquashAnimation()
         {
             ResetVisuals();
-            isAnimating = true;
+            _isAnimating = true;
 
             var offsetY = spriteRenderer.bounds.size.y * squashOffsetYMultiplier;
 
             _activeSequence = DOTween.Sequence();
-            _activeSequence.Append(spriteRenderer.transform.DOLocalMoveY(originalPosition.y - offsetY, squashDuration).SetEase(Ease.InQuad));
-            _activeSequence.Join(spriteRenderer.transform.DOScaleY(originalScale.y * squashScaleMultiplier, squashDuration).SetEase(Ease.InQuad));
-            _activeSequence.Append(spriteRenderer.transform.DOLocalMoveY(originalPosition.y, returnDuration).SetEase(Ease.OutBack));
-            _activeSequence.Join(spriteRenderer.transform.DOScaleY(originalScale.y, returnDuration).SetEase(Ease.OutBack));
-            _activeSequence.OnComplete(() => isAnimating = false);
+            _activeSequence.Append(spriteRenderer.transform.DOLocalMoveY(_originalPosition.y - offsetY, squashDuration).SetEase(Ease.InQuad));
+            _activeSequence.Join(spriteRenderer.transform.DOScaleY(_originalScale.y * squashScaleMultiplier, squashDuration).SetEase(Ease.InQuad));
+            _activeSequence.Append(spriteRenderer.transform.DOLocalMoveY(_originalPosition.y, returnDuration).SetEase(Ease.OutBack));
+            _activeSequence.Join(spriteRenderer.transform.DOScaleY(_originalScale.y, returnDuration).SetEase(Ease.OutBack));
+            _activeSequence.OnComplete(() => _isAnimating = false);
         }
     }
 }

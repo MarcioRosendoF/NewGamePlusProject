@@ -14,11 +14,11 @@ namespace Gameplay
         [SerializeField] private bool syncAnimationSpeed = true;
         [SerializeField] private float baseAnimationSpeed = 1f;
 
-        private static readonly int MoveXHash = Animator.StringToHash("MoveX");
-        private static readonly int MoveYHash = Animator.StringToHash("MoveY");
-        private static readonly int SpeedHash = Animator.StringToHash("Speed");
-        private static readonly int IsRunningHash = Animator.StringToHash("IsRunning");
-        private static readonly int IsInteractingHash = Animator.StringToHash("isInteracting");
+        private static readonly int _moveXHash = Animator.StringToHash("MoveX");
+        private static readonly int _moveYHash = Animator.StringToHash("MoveY");
+        private static readonly int _speedHash = Animator.StringToHash("Speed");
+        private static readonly int _isRunningHash = Animator.StringToHash("IsRunning");
+        private static readonly int _isInteractingHash = Animator.StringToHash("isInteracting");
 
         private bool _wasRunning;
 
@@ -73,10 +73,10 @@ namespace Gameplay
 
         private void UpdateAnimationState(Vector2 input, float speed)
         {
-            animator.SetFloat(SpeedHash, speed);
+            animator.SetFloat(_speedHash, speed);
 
             var isRunning = movementController.IsRunning;
-            animator.SetBool(IsRunningHash, isRunning);
+            animator.SetBool(_isRunningHash, isRunning);
 
             if (syncAnimationSpeed && isRunning != _wasRunning)
             {
@@ -88,14 +88,14 @@ namespace Gameplay
             if (input.sqrMagnitude > 0.01f)
             {
                 var cardinalDir = movementController.GetCardinalDirection(input);
-                animator.SetFloat(MoveXHash, cardinalDir.x);
-                animator.SetFloat(MoveYHash, cardinalDir.y);
+                animator.SetFloat(_moveXHash, cardinalDir.x);
+                animator.SetFloat(_moveYHash, cardinalDir.y);
             }
         }
 
         public void SetInteracting(bool state)
         {
-            if (animator != null) animator.SetBool(IsInteractingHash, state);
+            if (animator != null) animator.SetBool(_isInteractingHash, state);
         }
     }
 }

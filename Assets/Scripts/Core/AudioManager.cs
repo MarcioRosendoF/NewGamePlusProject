@@ -10,8 +10,8 @@ namespace Core
     {
         public static AudioManager Instance { get; private set; }
 
-        private readonly Dictionary<SoundEffectSO, AudioSource> activeLoopingSounds = new();
-        private AudioSourcePool audioSourcePool;
+        private readonly Dictionary<SoundEffectSO, AudioSource> _activeLoopingSounds = new();
+        private AudioSourcePool _audioSourcePool;
 
         private void Awake()
         {
@@ -19,7 +19,7 @@ namespace Core
             {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
-                audioSourcePool = GetComponent<AudioSourcePool>();
+                _audioSourcePool = GetComponent<AudioSourcePool>();
             }
             else
             {
@@ -39,7 +39,7 @@ namespace Core
 
         private void PlayLoopingSound(SoundEffectSO sound)
         {
-            if (activeLoopingSounds.TryGetValue(sound, out var existingSource) && existingSource != null)
+            if (_activeLoopingSounds.TryGetValue(sound, out var existingSource) && existingSource != null)
             {
                 if (sound.interruptLoopOnReplay)
                 {
@@ -54,7 +54,7 @@ namespace Core
                 }
             }
 
-            var audioSource = audioSourcePool.GetAudioSource();
+            var audioSource = _audioSourcePool.GetAudioSource();
             audioSource.DOKill();
             audioSource.clip = sound.clip;
             audioSource.volume = sound.volume;
@@ -67,12 +67,12 @@ namespace Core
             else
                 audioSource.Play();
 
-            activeLoopingSounds[sound] = audioSource;
+            _activeLoopingSounds[sound] = audioSource;
         }
 
         private void PlayOneShotSound(SoundEffectSO sound)
         {
-            var audioSource = audioSourcePool.GetAudioSource();
+            var audioSource = _audioSourcePool.GetAudioSource();
             audioSource.DOKill();
             audioSource.clip = sound.clip;
             audioSource.volume = sound.volume;
@@ -89,13 +89,13 @@ namespace Core
         {
             yield return new WaitForSeconds(clipLength);
 
-            if (audioSource != null && audioSourcePool != null)
-                audioSourcePool.ReturnAudioSource(audioSource);
+            if (audioSource != null && _audioSourcePool != null)
+                _audioSourcePool.ReturnAudioSource(audioSource);
         }
 
         public void StopLoopingSound(SoundEffectSO sound)
         {
-            if (activeLoopingSounds.TryGetValue(sound, out var audioSource))
+            if (_activeLoopingSounds.TryGetValue(sound, out var audioSource))
             {
                 if (audioSource != null)
                 {
@@ -105,26 +105,26 @@ namespace Core
                         StopAndReturn(audioSource);
                 }
 
-                activeLoopingSounds.Remove(sound);
+                _activeLoopingSounds.Remove(sound);
             }
         }
 
         public void StopAllLoopingSounds()
         {
-            foreach (var audioSource in activeLoopingSounds.Values)
+            foreach (var audioSource in _activeLoopingSounds.Values)
             {
                 if (audioSource != null)
                     StopAndReturn(audioSource);
             }
 
-            activeLoopingSounds.Clear();
+            _activeLoopingSounds.Clear();
         }
 
         private void StopAndReturn(AudioSource source)
         {
             source.Stop();
             source.DOKill();
-            audioSourcePool.ReturnAudioSource(source);
+            _audioSourcePool.ReturnAudioSource(source);
         }
 
         private void FadeIn(AudioSource audioSource, float targetVolume, float duration)
@@ -144,7 +144,7 @@ namespace Core
             audioSource.DOFade(0, duration).OnComplete(() =>
             {
                 audioSource.Stop();
-                audioSourcePool.ReturnAudioSource(audioSource);
+                _audioSourcePool.ReturnAudioSource(audioSource);
             });
         }
     }
