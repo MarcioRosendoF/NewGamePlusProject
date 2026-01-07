@@ -49,6 +49,7 @@ MonoBehaviour:
   animator: {fileID: 0}
   spriteRenderer: {fileID: 8291343738748347082}
   movementController: {fileID: 4984616113394224310}
+  useFlipping: 0
 --- !u!95 &579810256605906534
 Animator:
   serializedVersion: 7
@@ -215,7 +216,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.005009711, y: -0.32618707}
+  m_Offset: {x: 0, y: -0.36}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -278,6 +279,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2303370503330049642}
   - component: {fileID: 8291343738748347082}
+  - component: {fileID: 472464781459761553}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -294,7 +296,7 @@ Transform:
   m_GameObject: {fileID: 9212746001219664178}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0}
   m_LocalScale: {x: 5.5891, y: 5.5891, z: 5.5891}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -358,3 +360,15 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &472464781459761553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9212746001219664178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15c80587782d2874b8cb46365d54c286, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::YSort

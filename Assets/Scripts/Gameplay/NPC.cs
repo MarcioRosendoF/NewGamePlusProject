@@ -5,16 +5,39 @@ namespace Gameplay
     public class NPC : MonoBehaviour, IInteractable
     {
         [SerializeField] private string npcName = "NPC";
-        [SerializeField] private string dialogueMessage = "Hello, traveler!";
+        [SerializeField, TextArea] private string dialogueMessage = "Hello, traveler!";
+
+        public event System.Action OnInteractionStarted;
+        public event System.Action OnInteractionEnded;
+
+        private bool isInteracting;
 
         public void Interact()
         {
+            if (isInteracting) return;
+
+            isInteracting = true;
+            OnInteractionStarted?.Invoke();
             Debug.Log($"<color=cyan>[{npcName}]:</color> {dialogueMessage}");
+        }
+
+        private void Update()
+        {
+            if (isInteracting && Input.GetKeyDown(KeyCode.E))
+            {
+                EndInteraction();
+            }
+        }
+
+        private void EndInteraction()
+        {
+            isInteracting = false;
+            OnInteractionEnded?.Invoke();
         }
 
         public string GetInteractPrompt()
         {
-            return $"Talk to {npcName}";
+            return isInteracting ? "Continue..." : $"Talk to {npcName}";
         }
     }
 }

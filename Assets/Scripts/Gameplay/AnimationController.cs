@@ -8,6 +8,7 @@ namespace Gameplay
         [SerializeField] private Animator animator;
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private MovementController movementController;
+        [SerializeField] private bool useFlipping = false;
 
         private static readonly int MoveXHash = Animator.StringToHash("MoveX");
         private static readonly int MoveYHash = Animator.StringToHash("MoveY");
@@ -44,15 +45,7 @@ namespace Gameplay
             if (movementController != null && animator != null)
             {
                 var lastDir = movementController.LastMoveInput;
-                var cardinalDir = GetCardinalDirection(lastDir);
-
-                animator.SetFloat(MoveXHash, cardinalDir.x);
-                animator.SetFloat(MoveYHash, cardinalDir.y);
-                animator.SetFloat(SpeedHash, 0);
-
-#if UNITY_EDITOR
-                Debug.Log($"[AnimController] Start - Cardinal: ({cardinalDir.x}, {cardinalDir.y})");
-#endif
+                UpdateAnimationState(lastDir, 0);
             }
         }
 
@@ -61,16 +54,25 @@ namespace Gameplay
             if (movementController == null || animator == null) return;
 
             var currentSpeed = movementController.GetCurrentSpeed();
-            var isRunning = movementController.IsRunning;
+            var moveInput = movementController.MoveInput;
 
-            animator.SetFloat(SpeedHash, currentSpeed);
-            animator.SetBool(IsRunningHash, isRunning);
+            UpdateAnimationState(moveInput, currentSpeed);
 
-            if (currentSpeed > 0.01f)
+            if (useFlipping && spriteRenderer != null)
             {
-                var moveInput = movementController.MoveInput;
-                var cardinalDir = GetCardinalDirection(moveInput);
+                if (moveInput.x > 0.01f) spriteRenderer.flipX = false;
+                else if (moveInput.x < -0.01f) spriteRenderer.flipX = true;
+            }
+        }
 
+        private void UpdateAnimationState(Vector2 input, float speed)
+        {
+            animator.SetFloat(SpeedHash, speed);
+            animator.SetBool(IsRunningHash, movementController.IsRunning);
+
+            if (input.sqrMagnitude > 0.01f)
+            {
+                var cardinalDir = GetCardinalDirection(input);
                 animator.SetFloat(MoveXHash, cardinalDir.x);
                 animator.SetFloat(MoveYHash, cardinalDir.y);
             }
@@ -84,6 +86,18 @@ namespace Gameplay
         private Vector2 GetCardinalDirection(Vector2 input)
         {
             if (input.sqrMagnitude < 0.01f) return Vector2.zero;
+
+            if (useFlipping)
+            {
+                if (Mathf.Abs(input.x) > Mathf.Abs(input.y))
+                {
+                    return input.x > 0 ? Vector2.right : Vector2.left;
+                }
+                else
+                {
+                    return input.y > 0 ? Vector2.up : Vector2.down;
+                }
+            }
 
             if (Mathf.Abs(input.x) > Mathf.Abs(input.y))
             {

@@ -18,6 +18,7 @@ namespace Gameplay
         public Vector2 MoveInput => moveInput;
         public Vector2 LastMoveInput => lastMoveInput;
         public bool IsRunning => isRunning;
+        public float MoveSpeed => moveSpeed;
 
         private void Awake()
         {
@@ -29,7 +30,17 @@ namespace Gameplay
 
         public void OnMove(InputValue value)
         {
-            moveInput = value.Get<Vector2>();
+            SetMoveInput(value.Get<Vector2>());
+        }
+
+        public void OnSprint(InputValue value)
+        {
+            SetRunning(value.isPressed);
+        }
+
+        public void SetMoveInput(Vector2 input)
+        {
+            moveInput = input;
 
             if (moveInput.sqrMagnitude > 0.01f)
             {
@@ -37,9 +48,22 @@ namespace Gameplay
             }
         }
 
-        public void OnSprint(InputValue value)
+        public void SetRunning(bool state)
         {
-            isRunning = value.isPressed;
+            isRunning = state;
+        }
+
+        public void SetSpeed(float speed)
+        {
+            moveSpeed = speed;
+        }
+
+        public void SetLastMoveInput(Vector2 direction)
+        {
+            if (direction.sqrMagnitude > 0.01f)
+            {
+                lastMoveInput = direction.normalized;
+            }
         }
 
         private void FixedUpdate()
